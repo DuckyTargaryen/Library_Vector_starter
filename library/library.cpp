@@ -12,13 +12,17 @@ using namespace std;
 //NOTE: please ensure patron and book data are loaded from disk before calling the following
 //NOTE: also make sure you save patron and book data to disk any time you make a change to them
 //NOTE: for files where data is stored see constants.h BOOKFILE and PATRONFILE
+vector<book> books;
+vector<patron> patrons;
+
 
 /*
  * clear books and patrons containers
  * then reload them from disk 
  */
 void reloadAllData(){
-
+	loadBooks(books, BOOKFILE.c_str());
+	loadPatrons(patrons, PATRONFILE.c_str());
 }
 
 /* checkout a book to a patron
@@ -80,7 +84,7 @@ int enroll(std::string &name){
  * 
  */
 int numbBooks(){
-	return 0;
+	return books.size();
 }
 
 /*
@@ -88,7 +92,7 @@ int numbBooks(){
  * (ie. if 3 patrons returns 3)
  */
 int numbPatrons(){
-	return 0;
+	return patrons.size();
 }
 
 /*the number of books patron has checked out
