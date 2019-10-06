@@ -44,6 +44,7 @@ int loadBooks(std::vector<book> &books, const char* filename)
 		b.loaned_to_patron_id = stoi(input);
 		books.push_back(b);
 	}
+	inputFile.close();
 	if(books.empty()){
 		return NO_BOOKS_IN_LIBRARY;
 	}
@@ -94,6 +95,7 @@ int saveBooks(std::vector<book> &books, const char* filename)
 		b.loaned_to_patron_id = stoi(input);
 		books.push_back(b);
 	}
+	inputFile.close();
 	return SUCCESS;
 }
 
@@ -123,6 +125,7 @@ int loadPatrons(std::vector<patron> &patrons, const char* filename)
 		getline(inputFile, input, '\n');
 		p.number_books_checked_out = stoi(input);
 	}
+	inputFile.close();
 	if(patrons.empty()){
 		return NO_PATRONS_IN_LIBRARY;
 	}
@@ -157,5 +160,6 @@ int savePatrons(std::vector<patron> &patrons, const char* filename)
 		getline(inputFile, input, '\n');
 		p.number_books_checked_out = stoi(input);
 	}
+	inputFile.close();
 	return SUCCESS;
 }
