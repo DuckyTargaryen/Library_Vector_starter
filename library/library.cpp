@@ -46,6 +46,37 @@ void reloadAllData(){
  *         TOO_MANY_OUT patron has the max number of books allowed checked out
  */
 int checkout(int bookid, int patronid){
+	loadBooks(books, BOOKFILE.c_str());
+	loadPatrons(patrons, PATRONFILE.c_str());
+	int numBooksOut = UNINITIALIZED;
+	numBooksOut = howmanybooksdoesPatronHaveCheckedOut(patronid);
+	if(numBooksOut == PATRON_NOT_ENROLLED){
+		return PATRON_NOT_ENROLLED;
+	}
+	bool inCollection = false;
+	int location = UNINITIALIZED;
+	for(int i = 0; i < books.size(); i++){
+		if(bookid == books[i].book_id){
+			inCollection = true;
+			location = i;
+		}
+	}
+	if(!inCollection){
+		return BOOK_NOT_IN_COLLECTION;
+	}
+	if(numBooksOut == MAX_BOOKS_ALLOWED_OUT){
+		return TOO_MANY_OUT;
+	}
+	numBooksOut++;
+	books[location].loaned_to_patron_id = patronid;
+	books[location].state = OUT;
+	for(int i = 0; i < patrons.size(); i++){
+		if(patronid == patrons[i].patron_id){
+			patrons[i].number_books_checked_out = numBooksOut;
+		}
+	}
+	saveBooks(books, BOOKFILE.c_str());
+	savePatrons(patrons, PATRONFILE.c_str());
 	return SUCCESS;
 }
 
@@ -62,6 +93,26 @@ int checkout(int bookid, int patronid){
  * 		   BOOK_NOT_IN_COLLECTION
  */
 int checkin(int bookid){
+	loadBooks(books, BOOKFILE.c_str());
+	loadPatrons(patrons, PATRONFILE.c_str());
+	bool inCollection = false;
+	int location = UNINITIALIZED;
+	for(int i = 0; i < books.size(); i++){
+		if(bookid == books[i].book_id){
+			inCollection = true;
+			location = i;
+		}
+	}
+	if(inCollection == false){
+		return BOOK_NOT_IN_COLLECTION;
+	}
+	books[location].state = IN;
+	for(int i = 0; i < patrons.size(); i++){
+		if(books[location].loaned_to_patron_id == patrons[i].patron_id){
+			patrons[i].number_books_checked_out -= 1;
+		}
+	}
+	books[location].loaned_to_patron_id = NO_ONE;
 	return SUCCESS;
 }
 
@@ -75,7 +126,19 @@ int checkin(int bookid){
  *    the patron_id of the person added
  */
 int enroll(std::string &name){
-	return 0;
+	loadBooks(books, BOOKFILE.c_str());
+	loadPatrons(patrons, PATRONFILE.c_str());
+	patron pat;
+	if(patrons.size() == 0){
+		pat.patron_id = 0;
+	}else{
+		pat.patron_id = 1 + patrons[patrons.size()-1].patron_id;
+	}
+	pat.name = name;
+	pat.number_books_checked_out = 0;
+	patrons.push_back(pat);
+	savePatrons(patrons, PATRONFILE.c_str());
+	return pat.patron_id;
 }
 
 /*
@@ -84,6 +147,7 @@ int enroll(std::string &name){
  * 
  */
 int numbBooks(){
+	//loadBooks(books, BOOKFILE.c_str());
 	return books.size();
 }
 
@@ -92,6 +156,7 @@ int numbBooks(){
  * (ie. if 3 patrons returns 3)
  */
 int numbPatrons(){
+	//loadPatrons(patrons, PATRONFILE.c_str());
 	return patrons.size();
 }
 
@@ -101,7 +166,12 @@ int numbPatrons(){
  *        or PATRON_NOT_ENROLLED         
  */
 int howmanybooksdoesPatronHaveCheckedOut(int patronid){
-	return 0;
+	for(int i = 0; i < patrons.size(); i++){
+		if(patrons[i].patron_id == patronid){
+			return patrons[i].number_books_checked_out;
+		}
+	}
+	return PATRON_NOT_ENROLLED;
 }
 
 /* search through patrons container to see if patronid is there
@@ -111,6 +181,12 @@ int howmanybooksdoesPatronHaveCheckedOut(int patronid){
  *         PATRON_NOT_ENROLLED no patron with this patronid
  */
 int whatIsPatronName(std::string &name,int patronid){
-	return SUCCESS;
+	for(int i = 0; i < patrons.size(); i++){
+		if(patrons[i].patron_id == patronid){
+			name = patrons[i].name;
+			return SUCCESS;
+		}
+	}
+	return PATRON_NOT_ENROLLED;
 }
 
