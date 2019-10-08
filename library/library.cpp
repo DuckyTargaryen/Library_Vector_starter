@@ -12,6 +12,8 @@ using namespace std;
 //NOTE: please ensure patron and book data are loaded from disk before calling the following
 //NOTE: also make sure you save patron and book data to disk any time you make a change to them
 //NOTE: for files where data is stored see constants.h BOOKFILE and PATRONFILE
+
+//Containers for the books and patrons
 vector<book> books;
 vector<patron> patrons;
 
