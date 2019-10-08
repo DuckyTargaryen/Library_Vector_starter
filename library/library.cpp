@@ -46,8 +46,7 @@ void reloadAllData(){
  *         TOO_MANY_OUT patron has the max number of books allowed checked out
  */
 int checkout(int bookid, int patronid){
-	loadBooks(books, BOOKFILE.c_str());
-	loadPatrons(patrons, PATRONFILE.c_str());
+	reloadAllData();
 	int numBooksOut = UNINITIALIZED;
 	numBooksOut = howmanybooksdoesPatronHaveCheckedOut(patronid);
 	if(numBooksOut == PATRON_NOT_ENROLLED){
@@ -55,7 +54,8 @@ int checkout(int bookid, int patronid){
 	}
 	bool inCollection = false;
 	int location = UNINITIALIZED;
-	for(int i = 0; i < books.size(); i++){
+	int bookSize = books.size();
+	for(int i = 0; i < bookSize; i++){
 		if(bookid == books[i].book_id){
 			inCollection = true;
 			location = i;
@@ -70,7 +70,8 @@ int checkout(int bookid, int patronid){
 	numBooksOut++;
 	books[location].loaned_to_patron_id = patronid;
 	books[location].state = OUT;
-	for(int i = 0; i < patrons.size(); i++){
+	int patronsSize = patrons.size();
+	for(int i = 0; i < patronsSize; i++){
 		if(patronid == patrons[i].patron_id){
 			patrons[i].number_books_checked_out = numBooksOut;
 		}
@@ -93,11 +94,11 @@ int checkout(int bookid, int patronid){
  * 		   BOOK_NOT_IN_COLLECTION
  */
 int checkin(int bookid){
-	loadBooks(books, BOOKFILE.c_str());
-	loadPatrons(patrons, PATRONFILE.c_str());
+	reloadAllData();
 	bool inCollection = false;
 	int location = UNINITIALIZED;
-	for(int i = 0; i < books.size(); i++){
+	int bookSize = books.size();
+	for(int i = 0; i < bookSize; i++){
 		if(bookid == books[i].book_id){
 			inCollection = true;
 			location = i;
@@ -107,7 +108,8 @@ int checkin(int bookid){
 		return BOOK_NOT_IN_COLLECTION;
 	}
 	books[location].state = IN;
-	for(int i = 0; i < patrons.size(); i++){
+	int patronsSize = patrons.size();
+	for(int i = 0; i < patronsSize; i++){
 		if(books[location].loaned_to_patron_id == patrons[i].patron_id){
 			patrons[i].number_books_checked_out -= 1;
 		}
@@ -127,8 +129,7 @@ int checkin(int bookid){
  *    the patron_id of the person added
  */
 int enroll(std::string &name){
-	loadBooks(books, BOOKFILE.c_str());
-	loadPatrons(patrons, PATRONFILE.c_str());
+	reloadAllData();
 	patron pat;
 	if(patrons.size() == 0){
 		pat.patron_id = 0;
@@ -148,7 +149,7 @@ int enroll(std::string &name){
  * 
  */
 int numbBooks(){
-	//loadBooks(books, BOOKFILE.c_str());
+	reloadAllData();
 	return books.size();
 }
 
@@ -157,7 +158,7 @@ int numbBooks(){
  * (ie. if 3 patrons returns 3)
  */
 int numbPatrons(){
-	//loadPatrons(patrons, PATRONFILE.c_str());
+	reloadAllData();
 	return patrons.size();
 }
 
@@ -167,7 +168,8 @@ int numbPatrons(){
  *        or PATRON_NOT_ENROLLED         
  */
 int howmanybooksdoesPatronHaveCheckedOut(int patronid){
-	for(int i = 0; i < patrons.size(); i++){
+	int patronsSize = patrons.size();
+	for(int i = 0; i < patronsSize; i++){
 		if(patrons[i].patron_id == patronid){
 			return patrons[i].number_books_checked_out;
 		}
@@ -182,7 +184,8 @@ int howmanybooksdoesPatronHaveCheckedOut(int patronid){
  *         PATRON_NOT_ENROLLED no patron with this patronid
  */
 int whatIsPatronName(std::string &name,int patronid){
-	for(int i = 0; i < patrons.size(); i++){
+	int patronsSize = patrons.size();
+	for(int i = 0; i < patronsSize; i++){
 		if(patrons[i].patron_id == patronid){
 			name = patrons[i].name;
 			return SUCCESS;
