@@ -118,7 +118,6 @@ int checkin(int bookid){
 	}
 	books[location].loaned_to_patron_id = NO_ONE;
 	return SUCCESS;
-	//get the commit to work
 }
 
 /*
